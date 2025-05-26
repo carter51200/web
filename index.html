@@ -1,0 +1,88 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Digital Scientific Imaging Lab | Chung‑Ang University</title>
+  <meta name="description" content="DSIL advances medical, forensic and intelligent‑camera imaging research at Chung‑Ang University." />
+  <meta property="og:title" content="Digital Scientific Imaging Lab (DSIL)" />
+  <meta property="og:description" content="Scientific & forensic imaging for a safer future." />
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <!-- Camera Shutter Animation Overlay -->
+  <div id="camera-overlay" class="camera-overlay">
+    <div class="camera-container">
+      <svg class="camera-icon" viewBox="0 0 100 100" width="180" height="180">
+        <!-- Camera Body -->
+        <rect x="15" y="35" width="70" height="45" rx="8" fill="currentColor" stroke="currentColor" stroke-width="2"/>
+        <!-- Camera Lens Outer Ring -->
+        <circle cx="50" cy="57.5" r="15" fill="currentColor" stroke="currentColor" stroke-width="2"/>
+        <!-- Camera Lens Inner (Dark) -->
+        <circle cx="50" cy="57.5" r="12" fill="#1a1a1a" stroke="#333" stroke-width="1"/>
+        <!-- Lens Reflection -->
+        <circle cx="47" cy="54.5" r="3" fill="rgba(255,255,255,0.3)"/>
+        <!-- Camera Top -->
+        <rect x="25" y="25" width="50" height="15" rx="4" fill="currentColor" stroke="currentColor" stroke-width="2"/>
+        <!-- Shutter Button -->
+        <circle cx="35" cy="32.5" r="3" fill="currentColor" class="shutter-button"/>
+        <!-- Flash -->
+        <rect x="60" y="28" width="8" height="6" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/>
+        
+        <!-- Aperture Blades (for shutter effect) -->
+        <g class="aperture" transform="translate(50, 57.5)">
+          <path d="M -12,0 L -6,-10.4 L 6,-10.4 L 12,0 L 6,10.4 L -6,10.4 Z" fill="currentColor" opacity="0"/>
+          <path d="M -12,0 L -6,-10.4 L 6,-10.4 L 12,0 L 6,10.4 L -6,10.4 Z" fill="currentColor" opacity="0" transform="rotate(60)"/>
+          <path d="M -12,0 L -6,-10.4 L 6,-10.4 L 12,0 L 6,10.4 L -6,10.4 Z" fill="currentColor" opacity="0" transform="rotate(120)"/>
+        </g>
+      </svg>
+      
+      <!-- Flash Effect -->
+      <div class="flash-effect"></div>
+    </div>
+  </div>
+
+  <!-- Camera Trigger Button -->
+  <button id="camera-trigger" class="camera-trigger-btn" title="카메라 셔터 애니메이션 재생">
+    <svg viewBox="0 0 24 24" width="20" height="20">
+      <path d="M12 2C13.1 2 14 2.9 14 4H20C21.1 4 22 4.9 22 6V18C22 19.1 21.1 20 20 20H4C2.9 20 2 19.1 2 18V6C2 4.9 2.9 4 4 4H10C10 2.9 10.9 2 12 2M12 7C9.24 7 7 9.24 7 12S9.24 17 12 17 17 14.76 17 12 14.76 7 12 7M12 9C13.66 9 15 10.34 15 12S13.66 15 12 15 9 13.66 9 12 10.34 9 12 9Z" fill="currentColor"/>
+    </svg>
+  </button>
+
+  <header id="main-header">
+    <nav class="container">
+      <div class="logo">DSIL</div>
+      <ul>
+        <li><a href="index.html" class="active">Home</a></li>
+        <li><a href="research.html">About</a></li>
+        <li><a href="publications.html">Publications</a></li>
+        <li><a href="people.html">People</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container">
+        <h1 class="scroll-animate">Digital / Scientific Imaging Lab.</h1>
+        <p class="subtitle scroll-animate" data-delay="100" style=" margin-bottom: 10rem;">
+          DSIL expands imaging science beyond traditional photography, applying it to AI imaging, VR, drones, medicine, forensics, and more. <br /> We focus on future-oriented, practical research and nurture creative problem-solvers.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>&copy; <script>document.write(new Date().getFullYear())</script> DSIL. All Rights Reserved.</p>
+    </div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

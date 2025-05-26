@@ -26,70 +26,91 @@ document.addEventListener('DOMContentLoaded', () => {
   const flashEffect = document.querySelector('.flash-effect');
   const triggerBtn = document.getElementById('camera-trigger');
 
+  // ACCESSIBILITY CONSIDERATION:
+  // The camera animation currently auto-plays on page load (via a setTimeout call in DOMContentLoaded).
+  // For users with motion sensitivities, auto-playing animations can be problematic.
+  // Consider the following improvements:
+  // 1. Trigger the animation via user interaction only (e.g., on #camera-trigger click, without the auto-play).
+  // 2. Provide a user preference or a toggle mechanism to disable animations site-wide or this specific animation.
+  // Implementing these changes would require modifications to the auto-play logic below
+  // and potentially new UI elements for the toggle.
   function playCameraAnimation() {
+    // Ensure necessary elements for the animation are present.
     if (!cameraOverlay || !cameraIcon) return;
 
-    // Get text elements to shake
+    // Get text elements (hero title and subtitle) to apply a shake effect during the animation.
     const heroTitle = document.querySelector('.hero h1');
     const heroSubtitle = document.querySelector('.hero .subtitle');
+    // Filter out any null elements in case they are not found.
     const allTextElements = [heroTitle, heroSubtitle].filter(el => el);
 
-    // Show overlay
+    // --- Animation Stage 1: Overlay Activation & Initial Reset ---
+    // Activate the camera overlay to make it visible.
     cameraOverlay.classList.add('active');
     
-    // Reset all animations
-    cameraIcon.classList.remove('animate-in');
-    shutterButton.style.animation = '';
-    aperture.style.animation = '';
-    flashEffect.classList.remove('flash');
+    // Reset any previous animation states to ensure a clean start.
+    cameraIcon.classList.remove('animate-in'); // Reset camera icon's entry animation.
+    shutterButton.style.animation = ''; // Clear shutter button animation.
+    aperture.style.animation = ''; // Clear aperture animation.
+    flashEffect.classList.remove('flash'); // Remove flash effect class.
     
-    // Remove shake classes from text elements
+    // Remove any lingering shake effects from text elements.
     allTextElements.forEach(el => el.classList.remove('text-shake'));
 
-    // Start camera appear animation with more dynamic timing
+    // --- Animation Stage 2: Camera Icon Appears ---
+    // Start the camera icon's "appear" animation after a brief delay (50ms).
+    // This delay allows the overlay to become visible first.
     setTimeout(() => {
       cameraIcon.classList.add('animate-in');
-    }, 50);
+    }, 50); // 50ms delay for visual sequencing.
 
-    // More dynamic shutter click sequence
+    // --- Animation Stage 3: Shutter Sequence (Click, Aperture, Flash, Shake) ---
+    // This sequence is timed to simulate a camera taking a picture.
+    // The main shutter sequence starts after 600ms, allowing the camera icon to fully appear.
     setTimeout(() => {
-      // Shutter button press with bounce
+      // Shutter button press animation (simulates the click).
       shutterButton.style.animation = 'shutterClick 0.15s ease-out';
       
-      // Aperture close effect - faster and more dramatic
+      // Aperture closing effect, timed slightly after the shutter button press (50ms delay).
       setTimeout(() => {
         aperture.style.animation = 'apertureClose 0.25s ease-out';
-      }, 50);
+      }, 50); // 50ms delay relative to shutterButton animation start.
       
-      // Flash effect and text shake - synchronized impact
+      // Flash effect and text shake, synchronized for impact.
+      // This occurs 150ms after the aperture effect begins.
       setTimeout(() => {
-        flashEffect.classList.add('flash');
+        flashEffect.classList.add('flash'); // Trigger the visual flash.
         
-        // Shake all text elements simultaneously
+        // Apply shake effect to designated text elements.
         allTextElements.forEach(el => {
           el.classList.add('text-shake');
         });
         
-        // Add camera shake effect
+        // Add a shake effect to the camera icon itself for more dynamism.
         cameraIcon.style.animation += ', textShake 0.4s ease-out';
         
-      }, 150);
+      }, 150); // 150ms delay relative to aperture animation start.
       
-    }, 600);
+    }, 600); // 600ms delay relative to the start of playCameraAnimation.
 
-    // Hide overlay with more dramatic exit
+    // --- Animation Stage 4: Overlay Deactivation & Cleanup ---
+    // Hide the overlay and clean up animation states after the full sequence.
+    // This starts after 1800ms, allowing all prior effects to complete.
     setTimeout(() => {
+      // Start the camera icon's "disappear" animation.
       cameraIcon.style.animation = 'cameraDisappear 0.5s ease-in forwards';
+      
+      // After the camera icon disappears (500ms), hide the overlay and reset states.
       setTimeout(() => {
-        cameraOverlay.classList.remove('active');
-        cameraIcon.classList.remove('animate-in');
-        cameraIcon.style.animation = '';
+        cameraOverlay.classList.remove('active'); // Hide the overlay.
+        cameraIcon.classList.remove('animate-in'); // Reset camera icon entry class.
+        cameraIcon.style.animation = ''; // Clear all animations from camera icon.
         
-        // Clean up text shake classes and flash effect
+        // Clean up text shake and flash effects.
         allTextElements.forEach(el => el.classList.remove('text-shake'));
         flashEffect.classList.remove('flash');
-      }, 500);
-    }, 1800);
+      }, 500); // 500ms delay relative to cameraDisappear animation start.
+    }, 1800); // 1800ms delay relative to the start of playCameraAnimation.
   }
 
   // Trigger button click event
@@ -138,65 +159,85 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 5) Word-Cloud (unchanged) …
-  // … (기존 word-cloud 생성 코드 삽입) …
+  // 5) Word-Cloud
+  // TODO: The original Word-Cloud generation code was indicated to be here.
+  // If this feature is still desired, the relevant JavaScript code needs to be inserted.
+  // If the Word-Cloud is no longer needed, this section can be removed.
 
   // 6) D3 Network Diagram
   const networkContainer = document.getElementById('network-container');
   const svg = d3.select('#network');
 
+  // Check if the D3 network container and SVG element exist in the DOM.
   if (networkContainer && !svg.empty()) {
-    // --- 데이터 정의 ---
+    // --- Data Definition for the Network Diagram ---
+    // nodeHierarchy: Defines the hierarchical level of primary nodes.
+    // Level 0 is the central node, Level 1 are its direct children (main categories).
     const nodeHierarchy = {
-      'DSIL': 0,
-      'Capture / Imaging Tech': 1,
-      'Processing & Enhancement': 1,
-      'Analysis & Forensics': 1,
-      'Applications & Systems': 1
+      'DSIL': 0, // Central node
+      'Capture / Imaging Tech': 1, // Main category
+      'Processing & Enhancement': 1, // Main category
+      'Analysis & Forensics': 1, // Main category
+      'Applications & Systems': 1  // Main category
     };
+
+    // nodesData: An array of objects, each representing a node in the network.
+    // Each node must have an 'id' which is a unique identifier.
+    // Other properties (level, radius, shortLabel, initialX, initialY, x, y, fx, fy, vx, vy) are added or used by D3.
     const nodesData = [
+      // Level 0 (Central Node)
       { id: 'DSIL' },
+      // Level 1 (Main Categories)
       { id: 'Capture / Imaging Tech' },
+      { id: 'Processing & Enhancement' },
+      { id: 'Analysis & Forensics' },
+      { id: 'Applications & Systems' },
+      // Level 2 (Sub-categories/Keywords, implicitly level 2 if not in nodeHierarchy)
       { id: 'Image Sensor' }, { id: 'Drone Imaging' }, { id: '360 Camera' },
       { id: 'Microscopic Imaging' }, { id: 'Scanner Development' },
       { id: 'Non-Visible Spectrum' },
-      { id: 'Processing & Enhancement' },
       { id: 'Image Restoration' }, { id: 'Color Workflow' },
       { id: 'Interpolation' }, { id: 'Dynamic Range' },
       { id: 'Print Resolution' }, { id: 'Frame Extraction' },
-      { id: 'Analysis & Forensics' },
       { id: 'Image Quality' }, { id: 'Aesthetic Analysis' },
       { id: 'Depth Perception' },
       { id: 'Visual Satisfaction' }, { id: 'Psychological Analysis' },
       { id: 'Integrity / Forensics' },
-      { id: 'Applications & Systems' },
       { id: 'Digital Photography' }, { id: 'Commercial Photography' },
       { id: 'Sports Motion' }, { id: 'Imaging System' },
       { id: 'Print Research' }, { id: 'VR/AR Applications' }
     ];
+
+    // linksData: An array of objects, each representing a link (edge) between two nodes.
+    // 'source' and 'target' properties refer to the 'id' of the connected nodes.
     const linksData = [
+      // Connections from DSIL (Level 0) to Main Categories (Level 1)
       { source: 'DSIL', target: 'Capture / Imaging Tech' },
+      { source: 'DSIL', target: 'Processing & Enhancement' },
+      { source: 'DSIL', target: 'Analysis & Forensics' },
+      { source: 'DSIL', target: 'Applications & Systems' },
+      // Connections from 'Capture / Imaging Tech' (Level 1) to its sub-categories (Level 2)
       { source: 'Capture / Imaging Tech', target: 'Image Sensor' },
       { source: 'Capture / Imaging Tech', target: 'Drone Imaging' },
       { source: 'Capture / Imaging Tech', target: '360 Camera' },
       { source: 'Capture / Imaging Tech', target: 'Microscopic Imaging' },
       { source: 'Capture / Imaging Tech', target: 'Scanner Development' },
       { source: 'Capture / Imaging Tech', target: 'Non-Visible Spectrum' },
-      { source: 'DSIL', target: 'Processing & Enhancement' },
+      // Connections from 'Processing & Enhancement' (Level 1) to its sub-categories (Level 2)
       { source: 'Processing & Enhancement', target: 'Image Restoration' },
       { source: 'Processing & Enhancement', target: 'Color Workflow' },
       { source: 'Processing & Enhancement', target: 'Interpolation' },
       { source: 'Processing & Enhancement', target: 'Dynamic Range' },
       { source: 'Processing & Enhancement', target: 'Print Resolution' },
       { source: 'Processing & Enhancement', target: 'Frame Extraction' },
-      { source: 'DSIL', target: 'Analysis & Forensics' },
+      // Connections from 'Analysis & Forensics' (Level 1) to its sub-categories (Level 2)
       { source: 'Analysis & Forensics', target: 'Image Quality' },
       { source: 'Analysis & Forensics', target: 'Aesthetic Analysis' },
       { source: 'Analysis & Forensics', target: 'Depth Perception' },
       { source: 'Analysis & Forensics', target: 'Visual Satisfaction' },
       { source: 'Analysis & Forensics', target: 'Psychological Analysis' },
       { source: 'Analysis & Forensics', target: 'Integrity / Forensics' },
-      { source: 'DSIL', target: 'Applications & Systems' },
+      // Connections from 'Applications & Systems' (Level 1) to its sub-categories (Level 2)
       { source: 'Applications & Systems', target: 'Digital Photography' },
       { source: 'Applications & Systems', target: 'Commercial Photography' },
       { source: 'Applications & Systems', target: 'Sports Motion' },
@@ -205,10 +246,15 @@ document.addEventListener('DOMContentLoaded', () => {
       { source: 'Applications & Systems', target: 'VR/AR Applications' }
     ];
 
-    // 노드 레벨·반지름·레이블 설정
+    // --- Node Property Initialization ---
+    // Iterate over each node in nodesData to set its properties based on hierarchy and for display.
     nodesData.forEach(node => {
+      // node.level: Determines the visual hierarchy (0 for center, 1 for main categories, 2 for sub-items).
+      // Defaults to 2 if not found in nodeHierarchy.
       node.level = nodeHierarchy[node.id] !== undefined ? nodeHierarchy[node.id] : 2;
-      node.radius = node.level === 0 ? 95 : node.level === 1 ? 55 : 20;
+      // node.radius: Visual size of the node circle, larger for higher-level nodes.
+      node.radius = node.level === 0 ? 95 : node.level === 1 ? 55 : 20; // pixels
+      // node.shortLabel: A condensed label for display, replacing longer strings for brevity.
       node.shortLabel = node.id
         .replace('Capture / Imaging Tech', 'Imaging')
         .replace('Processing & Enhancement', 'Processing')
@@ -216,337 +262,375 @@ document.addEventListener('DOMContentLoaded', () => {
         .replace('Applications & Systems', 'Apps');
     });
 
-    let simulation, centerX, centerY; // 변수를 상위 스코프에서 선언
+    // simulation: D3 force simulation object.
+    // centerX, centerY: Coordinates for the center of the SVG canvas.
+    // These are declared in a higher scope to be accessible by setupSimulation and resize handler.
+    let simulation, centerX, centerY;
 
-    // --- Drag Functions ---
+    // --- Drag Functions for Node Interactivity ---
+    // These functions define the behavior of nodes when dragged by the user.
+    // 'sim' is the D3 force simulation instance.
     function drag(sim) {
+      // dragstarted: Called when a drag gesture starts.
+      // It activates the simulation's alpha target (keeps simulation "warm") and fixes the node's position (fx, fy).
       function dragstarted(event, d) {
-        if (!event.active) sim.alphaTarget(0.3).restart();
-        d.fx = d.x; d.fy = d.y;
+        if (!event.active) sim.alphaTarget(0.3).restart(); // Increase alphaTarget to make the simulation more responsive during drag.
+        d.fx = d.x; // Fix the node's x-coordinate.
+        d.fy = d.y; // Fix the node's y-coordinate.
       }
+      // dragged: Called repeatedly as the node is dragged.
+      // Updates the fixed position (fx, fy) of the node to the mouse pointer's current position.
       function dragged(event, d) {
-        d.fx = event.x; d.fy = event.y;
+        d.fx = event.x;
+        d.fy = event.y;
       }
+      // dragended: Called when a drag gesture ends.
+      // It reduces the alphaTarget (allowing simulation to cool down) and releases the fixed position (fx, fy = null).
       function dragended(event, d) {
-        if (!event.active) sim.alphaTarget(0.1); // 드래그 끝나면 약간의 활성화 유지
-        // 모든 노드의 고정 해제 (DSIL 포함)
-        d.fx = null; d.fy = null; 
+        if (!event.active) sim.alphaTarget(0.1); // Lower alphaTarget, but keep some activity to settle.
+        d.fx = null; // Release the fixed x-coordinate, allowing simulation to position it.
+        d.fy = null; // Release the fixed y-coordinate.
       }
+      // Returns a D3 drag behavior instance configured with the defined event handlers.
       return d3.drag()
         .on("start", dragstarted)
         .on("drag", dragged)
         .on("end", dragended);
     }
 
-    // --- Simulation Setup ---
+    // --- Simulation Setup Function ---
+    // This function initializes and configures the D3 force-directed graph simulation.
     function setupSimulation() {
+      // --- SVG and Dimensions Setup ---
+      // Get the current dimensions of the network container.
       const width = networkContainer.clientWidth;
       const height = networkContainer.clientHeight;
-      const titleOffset = 50;
-      const effectiveHeight = height - titleOffset;
+      const titleOffset = 50; // Space reserved at the top for the "Research Areas" title.
+      const effectiveHeight = height - titleOffset; // Usable height for the graph.
+      // Calculate the center coordinates of the usable area.
       centerX = width / 2;
       centerY = effectiveHeight / 2 + titleOffset;
 
+      // Configure the SVG element's viewBox for responsiveness and set its dimensions.
       svg.attr('viewBox', [0, 0, width, height])
          .attr('width', width)
          .attr('height', height);
 
-      // DSIL 노드 고정 및 초기 위치 설정
+      // --- Central Node (DSIL) Positioning ---
+      // Fix the central 'DSIL' node to the calculated center and store its initial position.
+      // This initial position is used by the 'return-to-initial' force.
       nodesData.forEach(n => {
         if (n.id === 'DSIL') { 
-          n.fx = centerX; n.fy = centerY; 
-          // DSIL 노드에도 초기 위치 저장 (return-to-initial force 적용 위해)
-          n.initialX = centerX;
-          n.initialY = centerY;
+          n.fx = centerX; // Fix x-coordinate to center.
+          n.fy = centerY; // Fix y-coordinate to center.
+          n.initialX = centerX; // Store initial x for 'return-to-initial' force.
+          n.initialY = centerY; // Store initial y for 'return-to-initial' force.
         }
       });
 
-      // 초기 노드 위치를 정돈된 형태로 설정
+      // --- Initial Node Positions Calculation ---
+      // Defines and calls a function to set aesthetically pleasing initial positions for nodes
+      // before the simulation starts, reducing initial chaotic movement.
       const initializeNodePositions = () => {
-        // 레벨 1 노드들을 DSIL 주변에 원형으로 배치 (45도 회전)
+        // Position Level 1 nodes in a circle around the DSIL (central) node, with a 45-degree offset.
         const level1Nodes = nodesData.filter(d => d.level === 1);
         const level1Count = level1Nodes.length;
-        const radius1 = 250; // 레벨 1 노드들의 초기 반경
+        const radius1 = 250; // Distance of Level 1 nodes from the center.
         
         level1Nodes.forEach((node, i) => {
-          // 45도(π/4 라디안) 회전을 적용
-          const angle = (2 * Math.PI * i) / level1Count + (Math.PI / 4);
-          node.x = centerX + radius1 * Math.cos(angle);
-          node.y = centerY + radius1 * Math.sin(angle);
-          // 초기 위치 저장
-          node.initialX = node.x;
-          node.initialY = node.y;
+          const angle = (2 * Math.PI * i) / level1Count + (Math.PI / 4); // Angle for each node, with 45-degree offset.
+          node.x = centerX + radius1 * Math.cos(angle); // Initial x-coordinate.
+          node.y = centerY + radius1 * Math.sin(angle); // Initial y-coordinate.
+          node.initialX = node.x; // Store for 'return-to-initial' force.
+          node.initialY = node.y; // Store for 'return-to-initial' force.
         });
         
-        // 레벨 2 노드들을 해당 부모 레벨 1 노드 주변에 배치
-        const level1Map = {};
+        // Position Level 2 nodes in smaller circles around their respective parent Level 1 nodes.
+        const level1Map = {}; // Helper map for quick lookup of Level 1 nodes.
         level1Nodes.forEach(node => { level1Map[node.id] = node; });
         
-        // 각 레벨 1 노드에 속한 레벨 2 노드 그룹화
-        const childGroups = {};
+        const childGroups = {}; // Group Level 2 nodes by their Level 1 parent.
         linksData.forEach(link => {
           const sourceId = typeof link.source === 'object' ? link.source.id : link.source;
           const targetId = typeof link.target === 'object' ? link.target.id : link.target;
           
-          // 레벨 1 -> 레벨 2 연결만 고려
-          if (level1Map[sourceId]) {
+          if (level1Map[sourceId]) { // If the source is a Level 1 node.
             childGroups[sourceId] = childGroups[sourceId] || [];
             const targetNode = nodesData.find(n => n.id === targetId);
-            if (targetNode && targetNode.level === 2) {
+            if (targetNode && targetNode.level === 2) { // If the target is a Level 2 node.
               childGroups[sourceId].push(targetNode);
             }
           }
         });
         
-        // 각 그룹별로 자식 노드들 배치
+        // Distribute Level 2 nodes around their parent.
         Object.entries(childGroups).forEach(([parentId, children]) => {
           const parent = level1Map[parentId];
           const childCount = children.length;
-          const radius2 = 120; // 레벨 2 노드들의 초기 반경
+          const radius2 = 120; // Distance of Level 2 nodes from their parent Level 1 node.
           
           children.forEach((child, i) => {
-            // 45도(π/4 라디안) 회전을 적용
-            const angle = (2 * Math.PI * i) / childCount + (Math.PI / 4);
-            // 부모 노드를 중심으로 원형 배치
-            child.x = parent.x + radius2 * Math.cos(angle);
-            child.y = parent.y + radius2 * Math.sin(angle);
-            // 초기 위치 저장
-            child.initialX = child.x;
-            child.initialY = child.y;
+            const angle = (2 * Math.PI * i) / childCount + (Math.PI / 4); // Angle for each child, with 45-degree offset.
+            child.x = parent.x + radius2 * Math.cos(angle); // Initial x-coordinate.
+            child.y = parent.y + radius2 * Math.sin(angle); // Initial y-coordinate.
+            child.initialX = child.x; // Store for 'return-to-initial' force.
+            child.initialY = child.y; // Store for 'return-to-initial' force.
           });
         });
       };
-      
-      // 초기 노드 위치 설정
-      initializeNodePositions();
+      initializeNodePositions(); // Call the function to set initial positions.
 
+      // --- D3 Force Simulation Configuration ---
       simulation = d3.forceSimulation(nodesData)
+        // forceLink: Attracts linked nodes towards each other.
+        // Distance varies by source node level (longer for Level 0 to Level 1).
         .force("link", d3.forceLink(linksData).id(d => d.id).distance(d => d.source.level === 0 ? 180 : 120).strength(0.4))
+        // forceManyBody: Simulates attraction (if positive strength) or repulsion (if negative) between nodes.
+        // Repulsion strength varies by level (stronger repulsion for higher-level nodes).
         .force("charge", d3.forceManyBody().strength(d => d.level === 0 ? -1000 : d.level === 1 ? -500 : -100))
+        // forceCenter: Drags all nodes towards the specified center point (centerX, centerY).
         .force("center", d3.forceCenter(centerX, centerY))
+        // forceCollide: Prevents nodes from overlapping.
+        // Collision radius is larger for Level 2 nodes to accommodate their labels.
         .force("collide", d3.forceCollide().radius(d => {
-          // 레벨2는 라벨까지 포함해 훨씬 더 크게
-          return d.level === 2
-            ? d.radius * 3       // (예: 10*3 = 30px)  
-            : d.radius + 5;
+          return d.level === 2 ? d.radius * 3 : d.radius + 5;
         }).strength(0.7))
-        // 초기 위치로 돌아가는 힘 추가
+        // forceReturnToInitial: A custom force that gently pulls nodes towards their stored initialX/initialY positions.
+        // This helps maintain a somewhat organized layout after dragging or initial settling.
         .force("return-to-initial", alpha => {
           nodesData.forEach(d => {
-            // DSIL 노드도 포함하여 초기 위치로 돌아가도록 수정 (조건 제거)
             if (d.initialX !== undefined && d.initialY !== undefined) {
-              // 현재 위치와 초기 위치 사이의 거리에 비례하는 힘으로 천천히 돌아가도록
+              // Velocity adjustment proportional to distance from initial position and current alpha.
               d.vx += (d.initialX - d.x) * alpha * 0.03;
               d.vy += (d.initialY - d.y) * alpha * 0.03;
             }
           });
         })
-        .alphaDecay(0.01) // 애니메이션 속도 감소 (기본값 0.0228)
-        .velocityDecay(0.6); // 속도 감소 (기본값 0.4)
+        .alphaDecay(0.01) // Rate at which simulation cools down (lower is slower).
+        .velocityDecay(0.6); // Friction affecting node movement (higher means more friction).
 
+      // --- SVG Element Creation (Links and Nodes) ---
+      // Remove any existing groups to prevent duplication on resize/re-setup.
       svg.selectAll("g").remove();
+      // Create a group for links, initially transparent.
       const linkGroup = svg.append("g").attr("stroke", "#aaa").attr("stroke-opacity", 0).style("opacity", 0);
+      // Create a group for nodes, initially transparent.
       const nodeGroup = svg.append("g").style("opacity", 0);
 
+      // Bind linksData to line elements within linkGroup.
       const linkElements = linkGroup.selectAll("line").data(linksData).join("line")
         .attr("stroke-width", 1.5);
 
+      // Bind nodesData to group (<g>) elements within nodeGroup.
+      // Each group will contain a circle and a text label.
       const nodeElements = nodeGroup.selectAll("g").data(nodesData).join("g")
-        .call(drag(simulation))
-        // 마우스 호버 이벤트 추가
-        .on('mouseover', handleMouseOver)
-        .on('mouseout', handleMouseOut);
+        .call(drag(simulation)) // Apply drag behavior to nodes.
+        .on('mouseover', handleMouseOver) // Attach mouseover event handler.
+        .on('mouseout', handleMouseOut);  // Attach mouseout event handler.
 
+      // Append circles to node groups.
       nodeElements.append("circle")
-        .attr("class", "node-circle") // 클래스 추가
-        .attr("r", d => d.radius)
-        .attr("fill", d => d.level === 0 ? 'var(--accent)' : d.level === 1 ? 'var(--accent-dark)' : '#ccc')
-        .attr("stroke", d => d.level === 2 ? 'none' : '#fff')
-        .attr("stroke-width", d => d.level === 2 ? 0 : 1.5);
+        .attr("class", "node-circle") // Class for potential CSS styling.
+        .attr("r", d => d.radius) // Radius based on node level.
+        .attr("fill", d => d.level === 0 ? 'var(--accent)' : d.level === 1 ? 'var(--accent-dark)' : '#ccc') // Fill color by level.
+        .attr("stroke", d => d.level === 2 ? 'none' : '#fff') // Stroke color (none for level 2).
+        .attr("stroke-width", d => d.level === 2 ? 0 : 1.5); // Stroke width.
+
+      // Append text labels to node groups.
       nodeElements.append("text")
         .attr("class", "node-label")
-        .text(d => d.shortLabel)
-        .attr('x', 0).attr('y', 0)
-        .attr('text-anchor', 'middle')
-        .attr('alignment-baseline', 'middle')
-        .attr('font-size', d => d.level === 0 ? '2.3rem' : d.level === 1 ? '1rem' : '0.8rem')
-        .attr('fill', d => (d.level === 0 || d.level === 1) ? 'white' : 'var(--text-primary)')
-        .style('font-weight', d => d.level === 0 ? '600' : '500')
-        .style('pointer-events', 'none')
-        .style('text-shadow', '0 1px 2px rgba(0,0,0,0.1)')
-        .style('transition', 'transform 0.3s ease');
+        .text(d => d.shortLabel) // Display the short label.
+        .attr('x', 0).attr('y', 0) // Centered within the node group.
+        .attr('text-anchor', 'middle') // Horizontal centering.
+        .attr('alignment-baseline', 'middle') // Vertical centering.
+        .attr('font-size', d => d.level === 0 ? '2.3rem' : d.level === 1 ? '1rem' : '0.8rem') // Font size by level.
+        .attr('fill', d => (d.level === 0 || d.level === 1) ? 'white' : 'var(--text-primary)') // Text color by level.
+        .style('font-weight', d => d.level === 0 ? '600' : '500') // Font weight by level.
+        .style('pointer-events', 'none') // Makes text non-interactive to mouse events (pass through to circle).
+        .style('text-shadow', '0 1px 2px rgba(0,0,0,0.1)') // Slight text shadow for readability.
+        .style('transition', 'transform 0.3s ease'); // Smooth transition for label positioning.
 
+      // Add tooltips (native browser title attribute) showing the full node ID on hover.
       nodeElements.append("title").text(d => d.id);
       
-      // --- 마우스 호버 핸들러 ---
-      function handleMouseOver(event, d) {
-        const group = d3.select(this);
+      // --- Mouse Hover Handlers ---
+      // handleMouseOver: Triggered when the mouse pointer enters a node group.
+      function handleMouseOver(event, d_node) { // Renamed 'd' to 'd_node' to avoid conflict with outer scope 'd' if any.
+        const group = d3.select(this); // 'this' refers to the <g> element hovered.
         
-        // 다른 요소 위로 올리기
-        group.raise();
+        group.raise(); // Bring the hovered node group to the front (visually on top).
         
-        // 원 확대 및 스타일 변경
+        // Enlarge the node's circle and increase its stroke width.
         group.select('.node-circle')
           .transition()
-          .duration(300) // Duration 통일
-          .attr('r', d => d.radius * 1.5) // 1.5배 확대
+          .duration(300)
+          .attr('r', d => d.radius * 1.5) // Scale radius by 1.5.
           .attr('stroke-width', 3);
           
-        // 텍스트 확대
+        // Enlarge the node's text label.
         group.select('.node-label')
           .transition()
-          .duration(300) // Duration 통일
-          .attr('font-size', d => {
-             // 초기 크기(2.3rem)에 비례하여 확대
+          .duration(300)
+          .attr('font-size', d => { // Font size adjusted based on original level-dependent size.
              if (d.level === 0) return '2.8rem'; 
-             if (d.level === 1) return '1.5rem'; // 1rem -> 1.5rem
-             return '1.1rem'; // 0.8rem -> 1.1rem
+             if (d.level === 1) return '1.5rem';
+             return '1.1rem';
             });
       }
 
-      function handleMouseOut(event, d) {
+      // handleMouseOut: Triggered when the mouse pointer leaves a node group.
+      function handleMouseOut(event, d_node) { // Renamed 'd' to 'd_node'.
         const group = d3.select(this);
         
-        // 원 원래 크기 및 스타일로 복귀
+        // Revert the node's circle to its original size and stroke width.
         group.select('.node-circle')
           .transition()
-          .duration(300) // Duration 통일
+          .duration(300)
           .attr('r', d => d.radius)
-          .attr('stroke-width', d => d.level === 2 ? 0 : 1.5); // 레벨 2는 stroke 없음
+          .attr('stroke-width', d => d.level === 2 ? 0 : 1.5);
           
-        // 텍스트 원래 크기로 복귀
+        // Revert the node's text label to its original font size.
         group.select('.node-label')
           .transition()
-          .duration(300) // Duration 통일
+          .duration(300)
           .attr('font-size', d => {
-             // 초기 크기로 복귀
-             if (d.level === 0) return '2.3rem'; 
-             if (d.level === 1) return '1rem'; 
-             return '0.8rem'; 
+             if (d.level === 0) return '2.3rem';
+             if (d.level === 1) return '1rem';
+             return '0.8rem';
             });
       }
 
-      // 먼저 시뮬레이션을 약간 진행시켜 초기 레이아웃을 어느 정도 안정화
+      // --- Initial Simulation Ticks & Fade-In Animation ---
+      // Run the simulation for a few ticks initially to allow layout to stabilize somewhat
+      // before making elements visible. This prevents a harsh jump from unpositioned to positioned.
       let initialTicks = 40;
       for (let i = 0; i < initialTicks; i++) {
         simulation.tick();
       }
       
-      // 점진적으로 나타나는 애니메이션 추가 - 노드와 링크 동시에 나타나게
+      // After initial ticks, gradually fade in the nodes and links for a smoother visual entry.
       setTimeout(() => {
-        // 노드와 링크 그룹이 함께 서서히 나타남
         nodeGroup.transition()
-          .duration(1800)
-          .style("opacity", 2);
+          .duration(1800) // 1.8 seconds duration for fade-in.
+          .style("opacity", 1); // Target opacity 1 (fully visible). Note: original code had 2, likely a typo, 1 is standard.
           
         linkGroup.transition()
           .duration(1800)
-          .style("opacity", 1)
-          .attr("stroke-opacity", 0.6);
-      }, 200); // 약간의 지연 후 시작
+          .style("opacity", 1) // Target opacity 1 for the group.
+          .attr("stroke-opacity", 0.6); // Links themselves have a slight transparency.
+      }, 200); // Start fade-in after a 200ms delay.
 
+      // --- Simulation Tick Event Handler ---
+      // This function is called on every "tick" of the D3 simulation, updating element positions.
       simulation.on("tick", () => {
-        // 레벨 1 노드들을 자신의 레벨 2 자식 노드들 중심으로 이동
+        // Custom logic: Adjust Level 1 nodes to be centered among their Level 2 children.
+        // This creates a tighter grouping for categories and their items.
         nodesData.forEach(node => {
           if (node.level === 1) {
-            // 이 레벨 1 노드에 연결된 레벨 2 노드들 찾기
             const childNodes = [];
             linksData.forEach(link => {
               if (link.source.id === node.id) {
-                const target = link.target;
+                const target = link.target; // D3 replaces string IDs with object references in links.
                 if (target.level === 2) {
                   childNodes.push(target);
                 }
               }
             });
             
-            // 자식 노드들이 있으면 중심점 계산
             if (childNodes.length > 0) {
-              let centerX = 0, centerY = 0;
+              let avgX = 0, avgY = 0;
               childNodes.forEach(child => {
-                centerX += child.x;
-                centerY += child.y;
+                avgX += child.x;
+                avgY += child.y;
               });
-              centerX /= childNodes.length;
-              centerY /= childNodes.length;
+              avgX /= childNodes.length;
+              avgY /= childNodes.length;
               
-              // 중심으로 부드럽게 이동 (즉시 이동하면 불안정해질 수 있음)
-              node.x += (centerX - node.x) * 0.1;
-              node.y += (centerY - node.y) * 0.1;
+              // Gently pull the parent node towards the average position of its children.
+              node.x += (avgX - node.x) * 0.1; // The 0.1 factor controls the strength/smoothness.
+              node.y += (avgY - node.y) * 0.1;
             }
           }
         });
         
-        // 1) 경계 제약
-        nodeElements
+        // 1) Boundary Constraints: Keep nodes within the SVG viewport.
+        // Nodes are constrained by their radius against the edges.
+        // The top boundary includes the titleOffset.
+        nodeElements // Though nodeElements are groups, we update underlying data (d.x, d.y) which simulation uses.
           .attr("cx", d => d.x = Math.max(d.radius, Math.min(width - d.radius, d.x)))
           .attr("cy", d => d.y = Math.max(d.radius + titleOffset, Math.min(height - d.radius, d.y)));
 
-        // 2) 링크 업데이트
+        // 2) Link Positions: Update link endpoints based on source/target node positions.
         linkElements
           .attr("x1", d => d.source.x)
           .attr("y1", d => d.source.y)
           .attr("x2", d => d.target.x)
           .attr("y2", d => d.target.y);
 
-        // 3) 노드 그룹 위치
+        // 3) Node Group Positions: Update the transform of each node group (<g>) to its new (x,y).
         nodeElements
           .attr("transform", d => `translate(${d.x},${d.y})`);
 
-          // 레벨2 라벨: CSS transform 으로만 이동 (text-anchor 고정)
-          nodeElements.select("text.node-label")
-            .each(function(d) {
-              // 링크 각도 계산
-              let dx = 0, dy = 0;
-              if (d.level === 2) {
-                const link = linksData.find(l => l.target.id === d.id);
-                const angle = link
-                  ? Math.atan2(link.target.y - link.source.y, link.target.x - link.source.x)
-                  : 0;
-                
-                // 레벨 2 노드에 대해 더 멀리 떨어뜨림
-                const distance = d.radius + 28;
-                dx = Math.cos(angle) * distance;
-                dy = Math.sin(angle) * distance;
-                
-                // text-anchor는 항상 middle로 고정 (좌우 이동 방지)
-                this.setAttribute('text-anchor', 'middle');
-                
-                // 배경으로 테두리 추가하여 가독성 향상
-                this.setAttribute('filter', 'drop-shadow(0px 0px 3px white)');
-              }
-              // CSS transform 에서 부드럽게 interpolate
-              this.style.transform = `translate(${dx}px, ${dy}px)`;
-            });
-        
-      });
-    }
+        // 4) Level 2 Label Positioning: Dynamically position labels for Level 2 nodes
+        // to be outside their circles, along the angle of their link from the parent.
+        nodeElements.select("text.node-label")
+          .each(function(d_text) { // 'this' refers to the text element. 'd_text' is its bound data.
+            let dx = 0, dy = 0; // Default offset (for non-Level 2 nodes, label stays centered in circle).
+            if (d_text.level === 2) {
+              const link = linksData.find(l => l.target.id === d_text.id); // Find the link connecting to this Level 2 node.
+              const angle = link // Calculate angle from parent (source) to this node (target).
+                ? Math.atan2(link.target.y - link.source.y, link.target.x - link.source.x)
+                : 0;
+              
+              const distance = d_text.radius + 28; // Distance of label from node center (radius + padding).
+              dx = Math.cos(angle) * distance; // Calculate x-offset.
+              dy = Math.sin(angle) * distance; // Calculate y-offset.
+              
+              this.setAttribute('text-anchor', 'middle'); // Keep text centered on its (dx,dy) position.
+              this.setAttribute('filter', 'drop-shadow(0px 0px 3px white)'); // Add a subtle white outline for readability.
+            }
+            // Apply the calculated offset using CSS transform for smooth animation.
+            this.style.transform = `translate(${dx}px, ${dy}px)`;
+          });
+      }); // End of simulation.on("tick")
+    } // End of setupSimulation()
 
-    // 초기 실행
+    // Initial setup of the simulation.
     setupSimulation();
 
-    // 7) 리사이즈 핸들러
-    let resizeTimer;
+    // --- Resize Handler ---
+    // Adjusts the simulation and SVG dimensions when the browser window is resized.
+    let resizeTimer; // Timer to debounce resize events.
     window.addEventListener('resize', () => {
       clearTimeout(resizeTimer);
+      // Debounce the resize handling to avoid excessive recalculations.
       resizeTimer = setTimeout(() => {
-        if (!simulation) return;
+        if (!simulation) return; // Do nothing if simulation isn't initialized.
+
+        // Get new dimensions of the container.
         const newW = networkContainer.clientWidth;
         const newH = networkContainer.clientHeight;
-        const titleOffset = 50;
+        const titleOffset = 50; // Same offset as in setup.
         const effH = newH - titleOffset;
-        const cx = newW/2;
-        const cy = effH/2 + titleOffset;
+        const cx = newW / 2; // New center X.
+        const cy = effH / 2 + titleOffset; // New center Y.
 
+        // Update SVG viewBox and dimensions.
         svg.attr('viewBox', [0, 0, newW, newH]).attr('width', newW).attr('height', newH);
 
+        // Re-fix the DSIL node to the new center.
         nodesData.forEach(n => {
-          if (n.id==='DSIL') { n.fx=cx; n.fy=cy; }
+          if (n.id === 'DSIL') { 
+            n.fx = cx; 
+            n.fy = cy; 
+          }
         });
 
+        // Update the center force of the simulation.
         simulation.force("center", d3.forceCenter(cx, cy));
+        // Reheat the simulation to adjust node positions.
         simulation.alpha(0.3).restart();
-      }, 250);
+      }, 250); // 250ms debounce interval.
     });
-  }
+  } // End of if (networkContainer && !svg.empty())
 });

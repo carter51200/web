@@ -297,7 +297,8 @@ main {
 }
 .person-card:hover {
   /* 마우스 오버 시 4px 위로 떠오르고 그림자 강화 */
-  transform: translateY(-4px);
+  /* !important is needed here to override inline styles set by Anime.js for .scroll-animate elements */
+  transform: translateY(-4px) !important;
   box-shadow: var(--shadow-strong);
 }
 .person-card img {
@@ -408,7 +409,7 @@ footer p {
 }
 
 .year-section .person-card:hover {
-  transform: translateY(-4px) !important;
+  transform: translateY(-4px);
   box-shadow: var(--shadow-strong);
 }
 
@@ -501,6 +502,58 @@ footer p {
     background: none; /* 모바일에서도 배경 제거 */
   }
 }
+
+/* Styles for Research Page Network Visualization */
+/* Ensure html and body take full height and hide overflow for the research page layout */
+.body-research-page, 
+.body-research-page body {
+  overflow: hidden; /* Critical for full-page D3 visualization */
+  /* height: 100%; is already global */
+  /* background-color: var(--bg); is already global for body */
+}
+
+.body-research-page main {
+  height: 100vh;
+  padding-top: 72px; /* Necessary as "no-padding" class on main prevents script.js adjustment */
+  background-color: var(--bg); /* research.html specific background */
+}
+
+.body-research-page .content-section {
+  padding: 0; /* research.html specific padding */
+  height: calc(100vh - 72px); /* research.html specific height */
+  background-color: var(--bg); /* research.html specific background */
+}
+
+.body-research-page #network-container {
+  height: 100%; /* Relative to parent .content-section */
+  background: var(--bg); /* research.html specific background, overrides global #network-container */
+  opacity: 1;
+  /* position: relative; is already in global #network-container */
+}
+
+.body-research-page .page-title {
+  position: absolute;
+  top: 0px; /* Positioned at the top of its containing block (likely #network-container or .content-section) */
+  left: 0;
+  right: 0;
+  text-align: center;
+  z-index: 10;
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--accent);
+  margin: 0;
+  pointer-events: none;
+}
+
+.body-research-page footer {
+  z-index: 100; /* Higher z-index for research page footer */
+}
+
+/* Override default .scroll-animate for elements that should be immediately visible on research page */
+.body-research-page .scroll-animate {
+  opacity: 1;
+  transform: translateY(0);
+}
 /* Word-Cloud Container */
 .word-cloud {
   position: relative;
@@ -554,24 +607,6 @@ footer p {
   transform-origin: 0 0;
   transition: transform 0.3s ease;
 }
-/* ────────────────────────────────────── */
-/* (style.css 맨 하단에 붙여넣으세요) */
-/* ────────────────────────────────────── */
-
-/* 1) 모든 person-card에 transition 보장 */
-.person-card {
-  /* 이전에 추가하셨겠지만, 없으면 꼭 넣어주세요 */
-  transition: transform 0.2s, box-shadow 0.2s; 
-} 
-
-/* 2) hover 효과 정의 */
-.person-card:hover {
-  transform: translateY(-4px);
-  /* inline transform을 덮어쓰기 위해 !important 추가 */
-  transform: translateY(-4px) !important;
-  box-shadow: var(--shadow-strong);
-}
-
 /* Current Members 섹션 위에 여백 추가 */
 #current-members-section {
   margin-top: 48px; /* year-section의 margin-bottom과 동일한 값 */

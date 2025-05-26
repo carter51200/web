@@ -20,61 +20,10 @@
         document.documentElement.style.visibility = 'visible';
       })();
     </script>
-    <style>
-      /* 전체 화면 네트워크 시각화를 위한 추가 스타일 */
-      html, body {
-        height: 100%;
-        overflow: hidden;
-        background-color: var(--bg);
-      }
-      
-      main {
-        height: 100vh;
-        padding-top: 72px;
-        background-color: var(--bg);
-      }
-      
-      .content-section {
-        padding: 0;
-        height: calc(100vh - 72px);
-        background-color: var(--bg);
-      }
-      
-      #network-container {
-        height: 100%;
-        background: var(--bg);
-        opacity: 1;
-        position: relative;
-      }
-      
-      .page-title {
-        position: absolute;
-        top: 0px;
-        left: 0;
-        right: 0;
-        text-align: center;
-        z-index: 10;
-        font-size: 2rem;
-        font-weight: 600;
-        color: var(--accent);
-        margin: 0;
-        pointer-events: none;
-      }
-      
-      footer {
-        z-index: 100;
-      }
-      
-      /* 초기 로딩 시 깜빡임 방지 */
-      .scroll-animate {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    </style>
     <!-- 메인 스크립트 -->
     <script src="script.js" defer></script>
   </head>
-<body>
+<body class="body-research-page">
   <header id="main-header">
     <nav class="container">
       <div class="logo">DSIL</div>
@@ -101,7 +50,7 @@
 
   <footer>
     <div class="container">
-      <p>&copy; <script>document.write(new Date().getFullYear())</script> DSIL. All Rights Reserved.</p>
+            <p>&copy; <script>document.write(new Date().getFullYear())</script> DSIL. All Rights Reserved.</p>
     </div>
   </footer>
 </body>

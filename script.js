@@ -171,73 +171,52 @@ document.addEventListener('DOMContentLoaded', () => {
   // Check if the D3 network container and SVG element exist in the DOM.
   if (networkContainer && !svg.empty()) {
     // --- Data Definition for the Network Diagram ---
-    // nodeHierarchy: Defines the hierarchical level of primary nodes.
-    // Level 0 is the central node, Level 1 are its direct children (main categories).
     const nodeHierarchy = {
-      'DSIL': 0, // Central node
-      'Capture / Imaging Tech': 1, // Main category
-      'Processing & Enhancement': 1, // Main category
-      'Analysis & Forensics': 1, // Main category
-      'Applications & Systems': 1  // Main category
+      'DSIL': 0, 
+      'Capture / Imaging Tech': 1, 
+      'Processing & Enhancement': 1, 
+      'Analysis & Forensics': 1, 
+      'Applications & Systems': 1  
     };
-
-    // nodesData: An array of objects, each representing a node in the network.
-    // Each node must have an 'id' which is a unique identifier.
-    // Other properties (level, radius, shortLabel, initialX, initialY, x, y, fx, fy, vx, vy) are added or used by D3.
     const nodesData = [
-      // Level 0 (Central Node)
-      { id: 'DSIL' },
-      // Level 1 (Main Categories)
-      { id: 'Capture / Imaging Tech' },
-      { id: 'Processing & Enhancement' },
-      { id: 'Analysis & Forensics' },
-      { id: 'Applications & Systems' },
-      // Level 2 (Sub-categories/Keywords, implicitly level 2 if not in nodeHierarchy)
+      { id: 'DSIL' }, { id: 'Capture / Imaging Tech' },
       { id: 'Image Sensor' }, { id: 'Drone Imaging' }, { id: '360 Camera' },
       { id: 'Microscopic Imaging' }, { id: 'Scanner Development' },
-      { id: 'Non-Visible Spectrum' },
+      { id: 'Non-Visible Spectrum' }, { id: 'Processing & Enhancement' },
       { id: 'Image Restoration' }, { id: 'Color Workflow' },
       { id: 'Interpolation' }, { id: 'Dynamic Range' },
       { id: 'Print Resolution' }, { id: 'Frame Extraction' },
-      { id: 'Image Quality' }, { id: 'Aesthetic Analysis' },
-      { id: 'Depth Perception' },
+      { id: 'Analysis & Forensics' }, { id: 'Image Quality' }, 
+      { id: 'Aesthetic Analysis' }, { id: 'Depth Perception' },
       { id: 'Visual Satisfaction' }, { id: 'Psychological Analysis' },
-      { id: 'Integrity / Forensics' },
+      { id: 'Integrity / Forensics' }, { id: 'Applications & Systems' },
       { id: 'Digital Photography' }, { id: 'Commercial Photography' },
       { id: 'Sports Motion' }, { id: 'Imaging System' },
       { id: 'Print Research' }, { id: 'VR/AR Applications' }
     ];
-
-    // linksData: An array of objects, each representing a link (edge) between two nodes.
-    // 'source' and 'target' properties refer to the 'id' of the connected nodes.
     const linksData = [
-      // Connections from DSIL (Level 0) to Main Categories (Level 1)
       { source: 'DSIL', target: 'Capture / Imaging Tech' },
-      { source: 'DSIL', target: 'Processing & Enhancement' },
-      { source: 'DSIL', target: 'Analysis & Forensics' },
-      { source: 'DSIL', target: 'Applications & Systems' },
-      // Connections from 'Capture / Imaging Tech' (Level 1) to its sub-categories (Level 2)
       { source: 'Capture / Imaging Tech', target: 'Image Sensor' },
       { source: 'Capture / Imaging Tech', target: 'Drone Imaging' },
       { source: 'Capture / Imaging Tech', target: '360 Camera' },
       { source: 'Capture / Imaging Tech', target: 'Microscopic Imaging' },
       { source: 'Capture / Imaging Tech', target: 'Scanner Development' },
       { source: 'Capture / Imaging Tech', target: 'Non-Visible Spectrum' },
-      // Connections from 'Processing & Enhancement' (Level 1) to its sub-categories (Level 2)
+      { source: 'DSIL', target: 'Processing & Enhancement' },
       { source: 'Processing & Enhancement', target: 'Image Restoration' },
       { source: 'Processing & Enhancement', target: 'Color Workflow' },
       { source: 'Processing & Enhancement', target: 'Interpolation' },
       { source: 'Processing & Enhancement', target: 'Dynamic Range' },
       { source: 'Processing & Enhancement', target: 'Print Resolution' },
       { source: 'Processing & Enhancement', target: 'Frame Extraction' },
-      // Connections from 'Analysis & Forensics' (Level 1) to its sub-categories (Level 2)
+      { source: 'DSIL', target: 'Analysis & Forensics' },
       { source: 'Analysis & Forensics', target: 'Image Quality' },
       { source: 'Analysis & Forensics', target: 'Aesthetic Analysis' },
       { source: 'Analysis & Forensics', target: 'Depth Perception' },
       { source: 'Analysis & Forensics', target: 'Visual Satisfaction' },
       { source: 'Analysis & Forensics', target: 'Psychological Analysis' },
       { source: 'Analysis & Forensics', target: 'Integrity / Forensics' },
-      // Connections from 'Applications & Systems' (Level 1) to its sub-categories (Level 2)
+      { source: 'DSIL', target: 'Applications & Systems' },
       { source: 'Applications & Systems', target: 'Digital Photography' },
       { source: 'Applications & Systems', target: 'Commercial Photography' },
       { source: 'Applications & Systems', target: 'Sports Motion' },
@@ -246,15 +225,9 @@ document.addEventListener('DOMContentLoaded', () => {
       { source: 'Applications & Systems', target: 'VR/AR Applications' }
     ];
 
-    // --- Node Property Initialization ---
-    // Iterate over each node in nodesData to set its properties based on hierarchy and for display.
     nodesData.forEach(node => {
-      // node.level: Determines the visual hierarchy (0 for center, 1 for main categories, 2 for sub-items).
-      // Defaults to 2 if not found in nodeHierarchy.
       node.level = nodeHierarchy[node.id] !== undefined ? nodeHierarchy[node.id] : 2;
-      // node.radius: Visual size of the node circle, larger for higher-level nodes.
-      node.radius = node.level === 0 ? 95 : node.level === 1 ? 55 : 20; // pixels
-      // node.shortLabel: A condensed label for display, replacing longer strings for brevity.
+      node.radius = node.level === 0 ? 95 : node.level === 1 ? 55 : 20; 
       node.shortLabel = node.id
         .replace('Capture / Imaging Tech', 'Imaging')
         .replace('Processing & Enhancement', 'Processing')
@@ -262,275 +235,349 @@ document.addEventListener('DOMContentLoaded', () => {
         .replace('Applications & Systems', 'Apps');
     });
 
-    // simulation: D3 force simulation object.
-    // centerX, centerY: Coordinates for the center of the SVG canvas.
-    // These are declared in a higher scope to be accessible by setupSimulation and resize handler.
     let simulation, centerX, centerY;
+    let nodeElements, linkElements; 
+    let focusedNode = null; // For tracking the currently focused node
 
-    // --- Drag Functions for Node Interactivity ---
-    // These functions define the behavior of nodes when dragged by the user.
-    // 'sim' is the D3 force simulation instance.
     function drag(sim) {
-      // dragstarted: Called when a drag gesture starts.
-      // It activates the simulation's alpha target (keeps simulation "warm") and fixes the node's position (fx, fy).
       function dragstarted(event, d) {
-        if (!event.active) sim.alphaTarget(0.3).restart(); // Increase alphaTarget to make the simulation more responsive during drag.
-        d.fx = d.x; // Fix the node's x-coordinate.
-        d.fy = d.y; // Fix the node's y-coordinate.
+        if (!event.active) sim.alphaTarget(0.3).restart(); 
+        d.fx = d.x; 
+        d.fy = d.y; 
       }
-      // dragged: Called repeatedly as the node is dragged.
-      // Updates the fixed position (fx, fy) of the node to the mouse pointer's current position.
       function dragged(event, d) {
         d.fx = event.x;
         d.fy = event.y;
       }
-      // dragended: Called when a drag gesture ends.
-      // It reduces the alphaTarget (allowing simulation to cool down) and releases the fixed position (fx, fy = null).
       function dragended(event, d) {
-        if (!event.active) sim.alphaTarget(0.1); // Lower alphaTarget, but keep some activity to settle.
-        d.fx = null; // Release the fixed x-coordinate, allowing simulation to position it.
-        d.fy = null; // Release the fixed y-coordinate.
+        if (!event.active) sim.alphaTarget(0.1); 
+        // Only unfix if not the focused node or if focused node is being dragged
+        if (!focusedNode || focusedNode.id !== d.id) {
+            d.fx = null;
+            d.fy = null;
+        }
       }
-      // Returns a D3 drag behavior instance configured with the defined event handlers.
       return d3.drag()
         .on("start", dragstarted)
         .on("drag", dragged)
         .on("end", dragended);
     }
+    
+    // --- Helper: Clear all highlights and focus ---
+    function clearAllHighlights() {
+        nodeElements.transition().duration(300)
+            .style('opacity', 1)
+            .each(function(d_node_data) { // Reset scale for each node
+                d3.select(this).select('.node-circle')
+                    .transition().duration(300)
+                    .attr('r', d_node_data.radius)
+                    .attr('stroke-width', d_node_data.level === 2 ? 0 : 1.5);
+                d3.select(this).select('.node-label')
+                    .transition().duration(300)
+                    .attr('font-size', d_node_data.level === 0 ? '2.3rem' : d_node_data.level === 1 ? '1rem' : '0.8rem');
+            });
 
-    // --- Simulation Setup Function ---
-    // This function initializes and configures the D3 force-directed graph simulation.
+        linkElements.transition().duration(300)
+            .style('stroke-opacity', 0.6)
+            .attr('stroke-width', 1.5);
+
+        if (focusedNode && focusedNode.fx && focusedNode.fy) {
+            // Only release if it was fixed by focus, not by ongoing drag
+            const focusedNodeElement = nodeElements.filter(d => d.id === focusedNode.id);
+            if (focusedNodeElement.size() > 0 && !d3.select(focusedNodeElement.node()).classed('dragging-manual')) { // Check a manual class if needed
+                 focusedNode.fx = null;
+                 focusedNode.fy = null;
+            }
+        }
+    }
+
+    // --- Helper: Apply styles for focused state ---
+    function applyFocusStyles(nodeToFocusOn) {
+        if (!nodeToFocusOn) {
+            clearAllHighlights();
+            return;
+        }
+
+        const linkedNodeIds = new Set();
+        linkedNodeIds.add(nodeToFocusOn.id);
+
+        linkElements
+            .transition().duration(300)
+            .style('stroke-opacity', link_d => {
+                if (link_d.source.id === nodeToFocusOn.id || link_d.target.id === nodeToFocusOn.id) {
+                    linkedNodeIds.add(link_d.source.id);
+                    linkedNodeIds.add(link_d.target.id);
+                    return 1;
+                }
+                return 0.1;
+            })
+            .attr('stroke-width', link_d => (link_d.source.id === nodeToFocusOn.id || link_d.target.id === nodeToFocusOn.id) ? 2.5 : 1.5);
+
+        nodeElements
+            .transition().duration(300)
+            .style('opacity', d_node_data => linkedNodeIds.has(d_node_data.id) ? 1 : 0.3);
+        
+        // Ensure the focused node itself is scaled up
+        nodeElements.filter(d => d.id === nodeToFocusOn.id)
+            .select('.node-circle')
+            .transition().duration(300)
+            .attr('r', d_node_data => d_node_data.radius * 1.5)
+            .attr('stroke-width', 3);
+        nodeElements.filter(d => d.id === nodeToFocusOn.id)
+            .select('.node-label')
+            .transition().duration(300)
+            .attr('font-size', d_node_data => {
+                if (d_node_data.level === 0) return '2.8rem';
+                if (d_node_data.level === 1) return '1.5rem';
+                return '1.1rem';
+            });
+    }
+
+    // --- Click Handlers ---
+    function handleNodeClick(event, clicked_d_node) {
+        event.stopPropagation(); // Prevent background click from firing.
+        
+        if (focusedNode && focusedNode.id === clicked_d_node.id) {
+            // Clicking the already focused node: un-focus and clear highlights.
+            if (focusedNode.fx && focusedNode.fy) { // Release fixed position
+                focusedNode.fx = null;
+                focusedNode.fy = null;
+            }
+            focusedNode = null;
+            clearAllHighlights();
+            simulation.alphaTarget(0.1).restart(); // Allow simulation to resettle
+        } else {
+            // Clicking a new node or focusing for the first time.
+            if (focusedNode && focusedNode.fx && focusedNode.fy) { // Release previously focused node
+                focusedNode.fx = null;
+                focusedNode.fy = null;
+            }
+            focusedNode = clicked_d_node;
+            focusedNode.fx = focusedNode.x; // Fix position
+            focusedNode.fy = focusedNode.y;
+            applyFocusStyles(focusedNode);
+            simulation.alphaTarget(0).restart(); // Stabilize focused node
+        }
+    }
+
+    function handleBackgroundClick() {
+        if (focusedNode) {
+            if (focusedNode.fx && focusedNode.fy) { // Release fixed position
+                 focusedNode.fx = null;
+                 focusedNode.fy = null;
+            }
+            focusedNode = null;
+            clearAllHighlights();
+            simulation.alphaTarget(0.1).restart(); // Allow simulation to resettle
+        }
+    }
+    
     function setupSimulation() {
-      // --- SVG and Dimensions Setup ---
-      // Get the current dimensions of the network container.
       const width = networkContainer.clientWidth;
       const height = networkContainer.clientHeight;
-      const titleOffset = 50; // Space reserved at the top for the "Research Areas" title.
-      const effectiveHeight = height - titleOffset; // Usable height for the graph.
-      // Calculate the center coordinates of the usable area.
+      const titleOffset = 50; 
+      const effectiveHeight = height - titleOffset; 
       centerX = width / 2;
       centerY = effectiveHeight / 2 + titleOffset;
 
-      // Configure the SVG element's viewBox for responsiveness and set its dimensions.
       svg.attr('viewBox', [0, 0, width, height])
          .attr('width', width)
-         .attr('height', height);
+         .attr('height', height)
+         .on('click', handleBackgroundClick); // Attach background click handler
 
-      // --- Central Node (DSIL) Positioning ---
-      // Fix the central 'DSIL' node to the calculated center and store its initial position.
-      // This initial position is used by the 'return-to-initial' force.
       nodesData.forEach(n => {
         if (n.id === 'DSIL') { 
-          n.fx = centerX; // Fix x-coordinate to center.
-          n.fy = centerY; // Fix y-coordinate to center.
-          n.initialX = centerX; // Store initial x for 'return-to-initial' force.
-          n.initialY = centerY; // Store initial y for 'return-to-initial' force.
+          n.fx = centerX; 
+          n.fy = centerY; 
+          n.initialX = centerX;
+          n.initialY = centerY;
         }
       });
 
-      // --- Initial Node Positions Calculation ---
-      // Defines and calls a function to set aesthetically pleasing initial positions for nodes
-      // before the simulation starts, reducing initial chaotic movement.
       const initializeNodePositions = () => {
-        // Position Level 1 nodes in a circle around the DSIL (central) node, with a 45-degree offset.
         const level1Nodes = nodesData.filter(d => d.level === 1);
         const level1Count = level1Nodes.length;
-        const radius1 = 250; // Distance of Level 1 nodes from the center.
+        const radius1 = 250; 
         
         level1Nodes.forEach((node, i) => {
-          const angle = (2 * Math.PI * i) / level1Count + (Math.PI / 4); // Angle for each node, with 45-degree offset.
-          node.x = centerX + radius1 * Math.cos(angle); // Initial x-coordinate.
-          node.y = centerY + radius1 * Math.sin(angle); // Initial y-coordinate.
-          node.initialX = node.x; // Store for 'return-to-initial' force.
-          node.initialY = node.y; // Store for 'return-to-initial' force.
+          const angle = (2 * Math.PI * i) / level1Count + (Math.PI / 4); 
+          node.x = centerX + radius1 * Math.cos(angle); 
+          node.y = centerY + radius1 * Math.sin(angle); 
+          node.initialX = node.x; 
+          node.initialY = node.y; 
         });
         
-        // Position Level 2 nodes in smaller circles around their respective parent Level 1 nodes.
-        const level1Map = {}; // Helper map for quick lookup of Level 1 nodes.
+        const level1Map = {}; 
         level1Nodes.forEach(node => { level1Map[node.id] = node; });
         
-        const childGroups = {}; // Group Level 2 nodes by their Level 1 parent.
+        const childGroups = {}; 
         linksData.forEach(link => {
           const sourceId = typeof link.source === 'object' ? link.source.id : link.source;
           const targetId = typeof link.target === 'object' ? link.target.id : link.target;
           
-          if (level1Map[sourceId]) { // If the source is a Level 1 node.
+          if (level1Map[sourceId]) { 
             childGroups[sourceId] = childGroups[sourceId] || [];
             const targetNode = nodesData.find(n => n.id === targetId);
-            if (targetNode && targetNode.level === 2) { // If the target is a Level 2 node.
+            if (targetNode && targetNode.level === 2) { 
               childGroups[sourceId].push(targetNode);
             }
           }
         });
         
-        // Distribute Level 2 nodes around their parent.
         Object.entries(childGroups).forEach(([parentId, children]) => {
           const parent = level1Map[parentId];
           const childCount = children.length;
-          const radius2 = 120; // Distance of Level 2 nodes from their parent Level 1 node.
+          const radius2 = 120; 
           
           children.forEach((child, i) => {
-            const angle = (2 * Math.PI * i) / childCount + (Math.PI / 4); // Angle for each child, with 45-degree offset.
-            child.x = parent.x + radius2 * Math.cos(angle); // Initial x-coordinate.
-            child.y = parent.y + radius2 * Math.sin(angle); // Initial y-coordinate.
-            child.initialX = child.x; // Store for 'return-to-initial' force.
-            child.initialY = child.y; // Store for 'return-to-initial' force.
+            const angle = (2 * Math.PI * i) / childCount + (Math.PI / 4); 
+            child.x = parent.x + radius2 * Math.cos(angle); 
+            child.y = parent.y + radius2 * Math.sin(angle); 
+            child.initialX = child.x; 
+            child.initialY = child.y; 
           });
         });
       };
-      initializeNodePositions(); // Call the function to set initial positions.
+      initializeNodePositions(); 
 
-      // --- D3 Force Simulation Configuration ---
       simulation = d3.forceSimulation(nodesData)
-        // forceLink: Attracts linked nodes towards each other.
-        // Distance varies by source node level (longer for Level 0 to Level 1).
         .force("link", d3.forceLink(linksData).id(d => d.id).distance(d => d.source.level === 0 ? 180 : 120).strength(0.4))
-        // forceManyBody: Simulates attraction (if positive strength) or repulsion (if negative) between nodes.
-        // Repulsion strength varies by level (stronger repulsion for higher-level nodes).
         .force("charge", d3.forceManyBody().strength(d => d.level === 0 ? -1000 : d.level === 1 ? -500 : -100))
-        // forceCenter: Drags all nodes towards the specified center point (centerX, centerY).
         .force("center", d3.forceCenter(centerX, centerY))
-        // forceCollide: Prevents nodes from overlapping.
-        // Collision radius is larger for Level 2 nodes to accommodate their labels.
         .force("collide", d3.forceCollide().radius(d => {
           return d.level === 2 ? d.radius * 3 : d.radius + 5;
         }).strength(0.7))
-        // forceReturnToInitial: A custom force that gently pulls nodes towards their stored initialX/initialY positions.
-        // This helps maintain a somewhat organized layout after dragging or initial settling.
         .force("return-to-initial", alpha => {
           nodesData.forEach(d => {
-            if (d.initialX !== undefined && d.initialY !== undefined) {
-              // Velocity adjustment proportional to distance from initial position and current alpha.
+            if (d.initialX !== undefined && d.initialY !== undefined && (!focusedNode || d.id !== focusedNode.id) ) { // Don't return focused node
               d.vx += (d.initialX - d.x) * alpha * 0.03;
               d.vy += (d.initialY - d.y) * alpha * 0.03;
             }
           });
         })
-        .alphaDecay(0.01) // Rate at which simulation cools down (lower is slower).
-        .velocityDecay(0.6); // Friction affecting node movement (higher means more friction).
+        .alphaDecay(0.01) 
+        .velocityDecay(0.6); 
 
-      // --- SVG Element Creation (Links and Nodes) ---
-      // Remove any existing groups to prevent duplication on resize/re-setup.
       svg.selectAll("g").remove();
-      // Create a group for links, initially transparent.
       const linkGroup = svg.append("g").attr("stroke", "#aaa").attr("stroke-opacity", 0).style("opacity", 0);
-      // Create a group for nodes, initially transparent.
       const nodeGroup = svg.append("g").style("opacity", 0);
 
-      // Bind linksData to line elements within linkGroup.
-      const linkElements = linkGroup.selectAll("line").data(linksData).join("line")
+      linkElements = linkGroup.selectAll("line").data(linksData).join("line") 
         .attr("stroke-width", 1.5);
 
-      // Bind nodesData to group (<g>) elements within nodeGroup.
-      // Each group will contain a circle and a text label.
-      const nodeElements = nodeGroup.selectAll("g").data(nodesData).join("g")
-        .call(drag(simulation)) // Apply drag behavior to nodes.
-        .on('mouseover', handleMouseOver) // Attach mouseover event handler.
-        .on('mouseout', handleMouseOut);  // Attach mouseout event handler.
+      nodeElements = nodeGroup.selectAll("g").data(nodesData).join("g") 
+        .call(drag(simulation)) 
+        .on('mouseover', handleMouseOver) 
+        .on('mouseout', handleMouseOut)
+        .on('click', handleNodeClick); // Attach node click handler
 
-      // Append circles to node groups.
       nodeElements.append("circle")
-        .attr("class", "node-circle") // Class for potential CSS styling.
-        .attr("r", d => d.radius) // Radius based on node level.
-        .attr("fill", d => d.level === 0 ? 'var(--accent)' : d.level === 1 ? 'var(--accent-dark)' : '#ccc') // Fill color by level.
-        .attr("stroke", d => d.level === 2 ? 'none' : '#fff') // Stroke color (none for level 2).
-        .attr("stroke-width", d => d.level === 2 ? 0 : 1.5); // Stroke width.
+        .attr("class", "node-circle") 
+        .attr("r", d => d.radius) 
+        .attr("fill", d => d.level === 0 ? 'var(--accent)' : d.level === 1 ? 'var(--accent-dark)' : '#ccc') 
+        .attr("stroke", d => d.level === 2 ? 'none' : '#fff') 
+        .attr("stroke-width", d => d.level === 2 ? 0 : 1.5); 
 
-      // Append text labels to node groups.
       nodeElements.append("text")
         .attr("class", "node-label")
-        .text(d => d.shortLabel) // Display the short label.
-        .attr('x', 0).attr('y', 0) // Centered within the node group.
-        .attr('text-anchor', 'middle') // Horizontal centering.
-        .attr('alignment-baseline', 'middle') // Vertical centering.
-        .attr('font-size', d => d.level === 0 ? '2.3rem' : d.level === 1 ? '1rem' : '0.8rem') // Font size by level.
-        .attr('fill', d => (d.level === 0 || d.level === 1) ? 'white' : 'var(--text-primary)') // Text color by level.
-        .style('font-weight', d => d.level === 0 ? '600' : '500') // Font weight by level.
-        .style('pointer-events', 'none') // Makes text non-interactive to mouse events (pass through to circle).
-        .style('text-shadow', '0 1px 2px rgba(0,0,0,0.1)') // Slight text shadow for readability.
-        .style('transition', 'transform 0.3s ease'); // Smooth transition for label positioning.
+        .text(d => d.shortLabel) 
+        .attr('x', 0).attr('y', 0) 
+        .attr('text-anchor', 'middle') 
+        .attr('alignment-baseline', 'middle') 
+        .attr('font-size', d => d.level === 0 ? '2.3rem' : d.level === 1 ? '1rem' : '0.8rem') 
+        .attr('fill', d => (d.level === 0 || d.level === 1) ? 'white' : 'var(--text-primary)') 
+        .style('font-weight', d => d.level === 0 ? '600' : '500') 
+        .style('pointer-events', 'none') 
+        .style('text-shadow', '0 1px 2px rgba(0,0,0,0.1)') 
+        .style('transition', 'transform 0.3s ease'); 
 
-      // Add tooltips (native browser title attribute) showing the full node ID on hover.
       nodeElements.append("title").text(d => d.id);
       
-      // --- Mouse Hover Handlers ---
-      // handleMouseOver: Triggered when the mouse pointer enters a node group.
-      function handleMouseOver(event, d_node) { // Renamed 'd' to 'd_node' to avoid conflict with outer scope 'd' if any.
-        const group = d3.select(this); // 'this' refers to the <g> element hovered.
-        
-        group.raise(); // Bring the hovered node group to the front (visually on top).
-        
-        // Enlarge the node's circle and increase its stroke width.
-        group.select('.node-circle')
-          .transition()
-          .duration(300)
-          .attr('r', d => d.radius * 1.5) // Scale radius by 1.5.
-          .attr('stroke-width', 3);
-          
-        // Enlarge the node's text label.
-        group.select('.node-label')
-          .transition()
-          .duration(300)
-          .attr('font-size', d => { // Font size adjusted based on original level-dependent size.
-             if (d.level === 0) return '2.8rem'; 
-             if (d.level === 1) return '1.5rem';
-             return '1.1rem';
-            });
+      // --- Mouse Hover Handlers (Modified for Focus State) ---
+      function handleMouseOver(event, d_hovered_node) {
+        d3.select(event.currentTarget).raise();
+
+        if (!focusedNode) { // Standard hover behavior when no node is focused
+            const group = d3.select(event.currentTarget);
+            group.select('.node-circle').transition().duration(100).attr('r', d_hovered_node.radius * 1.5).attr('stroke-width', 3);
+            group.select('.node-label').transition().duration(100).attr('font-size', d_hovered_node.level === 0 ? '2.8rem' : d_hovered_node.level === 1 ? '1.5rem' : '1.1rem');
+
+            const linkedNodeIds = new Set();
+            linkedNodeIds.add(d_hovered_node.id);
+
+            linkElements.transition().duration(100)
+                .style('stroke-opacity', link_d => {
+                    if (link_d.source.id === d_hovered_node.id || link_d.target.id === d_hovered_node.id) {
+                        linkedNodeIds.add(link_d.source.id);
+                        linkedNodeIds.add(link_d.target.id);
+                        return 1;
+                    }
+                    return 0.1;
+                })
+                .attr('stroke-width', link_d => (link_d.source.id === d_hovered_node.id || link_d.target.id === d_hovered_node.id) ? 2.5 : 1.5);
+
+            nodeElements.transition().duration(100)
+                .style('opacity', node_data => linkedNodeIds.has(node_data.id) ? 1 : 0.3);
+
+        } else { // Hover behavior when a node IS focused
+            const group = d3.select(event.currentTarget);
+            // Scale up the hovered node regardless of focus state
+            group.select('.node-circle').transition().duration(100).attr('r', d_hovered_node.radius * 1.5).attr('stroke-width', 3);
+            group.select('.node-label').transition().duration(100).attr('font-size', d_hovered_node.level === 0 ? '2.8rem' : d_hovered_node.level === 1 ? '1.5rem' : '1.1rem');
+            
+            // Ensure the hovered node is fully opaque
+            group.transition().duration(100).style('opacity', 1);
+
+            // Highlight direct links of the hovered node
+            linkElements
+                .filter(link_d => link_d.source.id === d_hovered_node.id || link_d.target.id === d_hovered_node.id)
+                .transition().duration(100)
+                .style('stroke-opacity', 1)
+                .attr('stroke-width', 2.5);
+        }
       }
 
-      // handleMouseOut: Triggered when the mouse pointer leaves a node group.
-      function handleMouseOut(event, d_node) { // Renamed 'd' to 'd_node'.
-        const group = d3.select(this);
-        
-        // Revert the node's circle to its original size and stroke width.
-        group.select('.node-circle')
-          .transition()
-          .duration(300)
-          .attr('r', d => d.radius)
-          .attr('stroke-width', d => d.level === 2 ? 0 : 1.5);
-          
-        // Revert the node's text label to its original font size.
-        group.select('.node-label')
-          .transition()
-          .duration(300)
-          .attr('font-size', d => {
-             if (d.level === 0) return '2.3rem';
-             if (d.level === 1) return '1rem';
-             return '0.8rem';
-            });
+      function handleMouseOut(event, d_moused_out_node) {
+        const group = d3.select(event.currentTarget);
+        // Reset scale of the moused-out node only if it's not the focused node or no node is focused
+        if (!focusedNode || (focusedNode && focusedNode.id !== d_moused_out_node.id)) {
+            group.select('.node-circle').transition().duration(100)
+                .attr('r', d_moused_out_node.radius)
+                .attr('stroke-width', d_moused_out_node.level === 2 ? 0 : 1.5);
+            group.select('.node-label').transition().duration(100)
+                .attr('font-size', d_moused_out_node.level === 0 ? '2.3rem' : d_moused_out_node.level === 1 ? '1rem' : '0.8rem');
+        }
+
+        if (focusedNode) {
+            applyFocusStyles(focusedNode); // Re-apply focus styles to ensure view consistency
+        } else {
+            clearAllHighlights(); // No focus, so clear all highlights from hover
+        }
       }
 
-      // --- Initial Simulation Ticks & Fade-In Animation ---
-      // Run the simulation for a few ticks initially to allow layout to stabilize somewhat
-      // before making elements visible. This prevents a harsh jump from unpositioned to positioned.
       let initialTicks = 40;
       for (let i = 0; i < initialTicks; i++) {
         simulation.tick();
       }
       
-      // After initial ticks, gradually fade in the nodes and links for a smoother visual entry.
       setTimeout(() => {
         nodeGroup.transition()
-          .duration(1800) // 1.8 seconds duration for fade-in.
-          .style("opacity", 1); // Target opacity 1 (fully visible). Note: original code had 2, likely a typo, 1 is standard.
+          .duration(1800) 
+          .style("opacity", 1); 
           
         linkGroup.transition()
           .duration(1800)
-          .style("opacity", 1) // Target opacity 1 for the group.
-          .attr("stroke-opacity", 0.6); // Links themselves have a slight transparency.
-      }, 200); // Start fade-in after a 200ms delay.
+          .style("opacity", 1) 
+          .attr("stroke-opacity", 0.6); 
+      }, 200); 
 
-      // --- Simulation Tick Event Handler ---
-      // This function is called on every "tick" of the D3 simulation, updating element positions.
       simulation.on("tick", () => {
-        // Custom logic: Adjust Level 1 nodes to be centered among their Level 2 children.
-        // This creates a tighter grouping for categories and their items.
         nodesData.forEach(node => {
-          if (node.level === 1) {
+          if (node.level === 1 && (!focusedNode || node.id !== focusedNode.id)) { // Don't auto-move focused parent
             const childNodes = [];
             linksData.forEach(link => {
               if (link.source.id === node.id) {
-                const target = link.target; // D3 replaces string IDs with object references in links.
+                const target = link.target; 
                 if (target.level === 2) {
                   childNodes.push(target);
                 }
@@ -546,91 +593,93 @@ document.addEventListener('DOMContentLoaded', () => {
               avgX /= childNodes.length;
               avgY /= childNodes.length;
               
-              // Gently pull the parent node towards the average position of its children.
-              node.x += (avgX - node.x) * 0.1; // The 0.1 factor controls the strength/smoothness.
+              node.x += (avgX - node.x) * 0.1; 
               node.y += (avgY - node.y) * 0.1;
             }
           }
         });
         
-        // 1) Boundary Constraints: Keep nodes within the SVG viewport.
-        // Nodes are constrained by their radius against the edges.
-        // The top boundary includes the titleOffset.
-        nodeElements // Though nodeElements are groups, we update underlying data (d.x, d.y) which simulation uses.
+        nodeElements 
           .attr("cx", d => d.x = Math.max(d.radius, Math.min(width - d.radius, d.x)))
           .attr("cy", d => d.y = Math.max(d.radius + titleOffset, Math.min(height - d.radius, d.y)));
 
-        // 2) Link Positions: Update link endpoints based on source/target node positions.
         linkElements
           .attr("x1", d => d.source.x)
           .attr("y1", d => d.source.y)
           .attr("x2", d => d.target.x)
           .attr("y2", d => d.target.y);
 
-        // 3) Node Group Positions: Update the transform of each node group (<g>) to its new (x,y).
         nodeElements
           .attr("transform", d => `translate(${d.x},${d.y})`);
 
-        // 4) Level 2 Label Positioning: Dynamically position labels for Level 2 nodes
-        // to be outside their circles, along the angle of their link from the parent.
         nodeElements.select("text.node-label")
-          .each(function(d_text) { // 'this' refers to the text element. 'd_text' is its bound data.
-            let dx = 0, dy = 0; // Default offset (for non-Level 2 nodes, label stays centered in circle).
+          .each(function(d_text) { 
+            let dx = 0, dy = 0; 
             if (d_text.level === 2) {
-              const link = linksData.find(l => l.target.id === d_text.id); // Find the link connecting to this Level 2 node.
-              const angle = link // Calculate angle from parent (source) to this node (target).
+              const link = linksData.find(l => l.target.id === d_text.id); 
+              const angle = link 
                 ? Math.atan2(link.target.y - link.source.y, link.target.x - link.source.x)
                 : 0;
               
-              const distance = d_text.radius + 28; // Distance of label from node center (radius + padding).
-              dx = Math.cos(angle) * distance; // Calculate x-offset.
-              dy = Math.sin(angle) * distance; // Calculate y-offset.
+              const distance = d_text.radius + 28; 
+              dx = Math.cos(angle) * distance; 
+              dy = Math.sin(angle) * distance; 
               
-              this.setAttribute('text-anchor', 'middle'); // Keep text centered on its (dx,dy) position.
-              this.setAttribute('filter', 'drop-shadow(0px 0px 3px white)'); // Add a subtle white outline for readability.
+              this.setAttribute('text-anchor', 'middle'); 
+              this.setAttribute('filter', 'drop-shadow(0px 0px 3px white)'); 
             }
-            // Apply the calculated offset using CSS transform for smooth animation.
             this.style.transform = `translate(${dx}px, ${dy}px)`;
           });
-      }); // End of simulation.on("tick")
-    } // End of setupSimulation()
+      }); 
+    } 
 
-    // Initial setup of the simulation.
     setupSimulation();
 
-    // --- Resize Handler ---
-    // Adjusts the simulation and SVG dimensions when the browser window is resized.
-    let resizeTimer; // Timer to debounce resize events.
+    let resizeTimer; 
     window.addEventListener('resize', () => {
       clearTimeout(resizeTimer);
-      // Debounce the resize handling to avoid excessive recalculations.
       resizeTimer = setTimeout(() => {
-        if (!simulation) return; // Do nothing if simulation isn't initialized.
+        if (!simulation) return; 
 
-        // Get new dimensions of the container.
         const newW = networkContainer.clientWidth;
         const newH = networkContainer.clientHeight;
-        const titleOffset = 50; // Same offset as in setup.
+        const titleOffset = 50; 
         const effH = newH - titleOffset;
-        const cx = newW / 2; // New center X.
-        const cy = effH / 2 + titleOffset; // New center Y.
+        const cx = newW / 2; 
+        const cy = effH / 2 + titleOffset; 
 
-        // Update SVG viewBox and dimensions.
         svg.attr('viewBox', [0, 0, newW, newH]).attr('width', newW).attr('height', newH);
 
-        // Re-fix the DSIL node to the new center.
         nodesData.forEach(n => {
           if (n.id === 'DSIL') { 
             n.fx = cx; 
             n.fy = cy; 
           }
+          // If a node is focused, update its fixed position to the new center if it's DSIL,
+          // or keep its relative position otherwise (might need adjustment if layout changes drastically)
+          if (focusedNode && n.id === focusedNode.id) {
+            if (n.id === 'DSIL') {
+                focusedNode.fx = cx;
+                focusedNode.fy = cy;
+            } else {
+                // For non-DSIL focused nodes, we might need to recalculate fx, fy
+                // or let the simulation reposition them slightly by not setting fx/fy here.
+                // For now, let's assume they stay fixed relative to their previous position,
+                // which might not be ideal on large resizes.
+                // A better approach might be to store relative offsets or re-pin.
+                 focusedNode.fx = focusedNode.x; 
+                 focusedNode.fy = focusedNode.y;
+            }
+          }
         });
-
-        // Update the center force of the simulation.
+        
         simulation.force("center", d3.forceCenter(cx, cy));
-        // Reheat the simulation to adjust node positions.
-        simulation.alpha(0.3).restart();
-      }, 250); // 250ms debounce interval.
+        if (focusedNode) {
+            simulation.alphaTarget(0).restart(); // Keep focused stable
+        } else {
+            simulation.alpha(0.3).restart(); // Reheat to adjust layout
+        }
+      }, 250); 
     });
-  } // End of if (networkContainer && !svg.empty())
+  } 
 });

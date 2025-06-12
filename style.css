@@ -501,6 +501,104 @@ footer p {
     background: none; /* 모바일에서도 배경 제거 */
   }
 }
+
+/* === Research Page: Our Mission & Focus === */
+.content-section .container h3 {
+  margin-top: 2em;
+  margin-bottom: 1em;
+  /* Assuming other h3 styles are globally defined or we can add specific font-size/color here if needed */
+}
+
+.content-section .container p {
+  line-height: 1.7; /* Enhanced readability */
+  margin-bottom: 1em;
+  /* Assuming base paragraph font-size is suitable */
+}
+
+/* === Publications Page Styling === */
+.publication-list-year {
+  list-style-type: none;
+  padding-left: 0;
+  margin-bottom: 2em; /* Space between year groups */
+}
+
+.publication-list-year h4 {
+  font-size: 1.5rem; /* Slightly larger than default p, smaller than h2/h3 */
+  font-weight: 600;
+  color: var(--accent-dark); /* Use a color from the palette */
+  margin-top: 2em;
+  margin-bottom: 1em;
+  padding-bottom: 0.5em;
+  border-bottom: 2px solid var(--accent);
+}
+
+.publication-list-year li {
+  background-color: var(--surface);
+  border: var(--border);
+  border-radius: var(--radius);
+  padding: 1.5em;
+  margin-bottom: 1.5em;
+  box-shadow: var(--shadow-light);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.publication-list-year li:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-strong);
+}
+
+.publication-list-year li p {
+  margin-bottom: 0.5em; /* Default margin for paragraphs inside li */
+}
+
+.publication-list-year li p.authors {
+  font-size: 0.95em;
+  color: var(--text-secondary);
+  margin-bottom: 0.25em;
+}
+
+.publication-list-year li p.title {
+  font-weight: 600; /* Already has <strong>, but this reinforces */
+  color: var(--text-primary);
+  margin-bottom: 0.25em;
+  line-height: 1.4;
+}
+
+.publication-list-year li p.source {
+  font-size: 0.9em;
+  font-style: italic;
+  color: var(--text-secondary);
+  margin-bottom: 0.25em;
+}
+
+.publication-list-year li p.links a {
+  display: inline-block;
+  background-color: var(--accent);
+  color: white;
+  padding: 8px 15px; /* Slightly larger padding */
+  text-decoration: none;
+  border-radius: 5px; /* Slightly more rounded */
+  margin-top: 0.5em;
+  font-size: 0.9em;
+  font-weight: 500;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.publication-list-year li p.links a:hover {
+  background-color: var(--accent-dark);
+  transform: translateY(-1px);
+  color: white; /* Ensure text color remains white on hover */
+}
+
+.publication-list-year li p.abstract,
+.publication-list-year li p.keywords,
+.publication-list-year li p.doi {
+  font-style: italic;
+  color: #777; /* Using a specific gray as var(--text-secondary) might be too light */
+  font-size: 0.9em;
+  margin-bottom: 0.25em;
+  line-height: 1.5;
+}
 /* Word-Cloud Container */
 .word-cloud {
   position: relative;
@@ -818,6 +916,105 @@ footer p {
 }
 
 /* Responsive adjustments */
+
+/* === Research Page: Our Mission & Focus === */
+.content-section .container h3 {
+  margin-top: 2em;
+  margin-bottom: 1em;
+  /* Assuming other h3 styles are globally defined or we can add specific font-size/color here if needed */
+}
+
+.content-section .container p {
+  line-height: 1.7; /* Enhanced readability */
+  margin-bottom: 1em;
+  /* Assuming base paragraph font-size is suitable */
+}
+
+/* === Publications Page Styling === */
+.publication-list-year {
+  list-style-type: none;
+  padding-left: 0;
+  margin-bottom: 2em; /* Space between year groups */
+}
+
+.publication-list-year h4 {
+  font-size: 1.5rem; /* Slightly larger than default p, smaller than h2/h3 */
+  font-weight: 600;
+  color: var(--accent-dark); /* Use a color from the palette */
+  margin-top: 2em;
+  margin-bottom: 1em;
+  padding-bottom: 0.5em;
+  border-bottom: 2px solid var(--accent);
+}
+
+.publication-list-year li {
+  background-color: var(--surface);
+  border: var(--border);
+  border-radius: var(--radius);
+  padding: 1.5em;
+  margin-bottom: 1.5em;
+  box-shadow: var(--shadow-light);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.publication-list-year li:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-strong);
+}
+
+.publication-list-year li p {
+  margin-bottom: 0.5em; /* Default margin for paragraphs inside li */
+}
+
+.publication-list-year li p.authors {
+  font-size: 0.95em;
+  color: var(--text-secondary);
+  margin-bottom: 0.25em;
+}
+
+.publication-list-year li p.title {
+  font-weight: 600; /* Already has <strong>, but this reinforces */
+  color: var(--text-primary);
+  margin-bottom: 0.25em;
+  line-height: 1.4;
+}
+
+.publication-list-year li p.source {
+  font-size: 0.9em;
+  font-style: italic;
+  color: var(--text-secondary);
+  margin-bottom: 0.25em;
+}
+
+.publication-list-year li p.links a {
+  display: inline-block;
+  background-color: var(--accent);
+  color: white;
+  padding: 8px 15px; /* Slightly larger padding */
+  text-decoration: none;
+  border-radius: 5px; /* Slightly more rounded */
+  margin-top: 0.5em;
+  font-size: 0.9em;
+  font-weight: 500;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.publication-list-year li p.links a:hover {
+  background-color: var(--accent-dark);
+  transform: translateY(-1px);
+  color: white; /* Ensure text color remains white on hover */
+}
+
+.publication-list-year li p.abstract,
+.publication-list-year li p.keywords,
+.publication-list-year li p.doi {
+  font-style: italic;
+  color: #777; /* Using a specific gray as var(--text-secondary) might be too light */
+  font-size: 0.9em;
+  margin-bottom: 0.25em;
+  line-height: 1.5;
+}
+
 @media (max-width: 768px) {
   .camera-trigger-btn {
     top: 80px;
